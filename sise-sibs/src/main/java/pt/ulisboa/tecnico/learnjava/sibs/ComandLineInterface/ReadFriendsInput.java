@@ -60,15 +60,13 @@ public class ReadFriendsInput {
 		return targetPhoneNumber;
 	}
 
-	public static void resetTargetPhoneNumber() {
+//Este foi o método final criado para cumprir a Guideline Write Short Units of Code. 
+	public static void resetTargetInfo() {
 		targetPhoneNumber = null;
+		targetAmountPaied = null;
 	}
 
 	public static Integer getTargetAmountPaied() {
 		return targetAmountPaied;
-	}
-
-	public static void resetTargetAmountPaied() {
-		targetAmountPaied = null;
 	}
 }

@@ -19,17 +19,9 @@ public class MbwaySplitBill {
 		this.mbway = Mbway.getInstance();
 		this.friendsInfo = ReadFriendsInput.getFriendsInfo();
 
-		int totalPaymentMoney = 0;
-
-		for (Integer amount : this.friendsInfo.values()) {
-			totalPaymentMoney += amount;
-		}
-
-		if (totalPaymentMoney != totalAmount) {
+		if (!this.checkPaymentMoney(totalAmount)) {
 			System.out.println("Something is wrong. Did you set the bill amount right?");
-			return;
 		} else {
-
 			String targetPhoneNumber = ReadFriendsInput.getTargetPhoneNumber();
 
 			for (String phoneNumber : this.friendsInfo.keySet()) {
@@ -41,8 +33,25 @@ public class MbwaySplitBill {
 		}
 
 		ReadFriendsInput.getFriendsInfo().clear();
-		ReadFriendsInput.resetTargetAmountPaied();
-		ReadFriendsInput.resetTargetPhoneNumber();
+		ReadFriendsInput.resetTargetInfo();
+	}
+
+	// Este método (getPaymentMoney) está a melhorar o código de acordo com a
+	// guideline Write Short Units of Code.
+
+	private boolean checkPaymentMoney(Integer totalAmount) {
+		int totalPaymentMoney = 0;
+
+		for (Integer amount : this.friendsInfo.values()) {
+			totalPaymentMoney += amount;
+		}
+
+		if (totalPaymentMoney != totalAmount) {
+			return true;
+		} else {
+			return false;
+		}
+
 	}
 
 	private String getFirstName(String phoneNumber) throws ServicesException, MbwayException {
