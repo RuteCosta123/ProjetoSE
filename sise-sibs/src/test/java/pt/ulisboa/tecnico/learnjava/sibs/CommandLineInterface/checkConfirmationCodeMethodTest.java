@@ -26,7 +26,7 @@ public class checkConfirmationCodeMethodTest {
 		this.client = new Client(this.bank, "Rute", "Costa", "123456789", null, "Rua das Libelinhas", 22);
 		this.bank.addClient(this.client);
 		this.bank.createAccount(AccountType.CHECKING, this.client, 100000, 0);
-		this.mbwayAccount = new MbwayAccount("CGDCK1", "123456789");
+		this.mbwayAccount = new MbwayAccount("CGDCK1", "123456789", this.mbway);
 
 	}
 

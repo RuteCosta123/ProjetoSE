@@ -36,7 +36,7 @@ public class AssociateMbwayMethodTest {
 	@Test
 	public void success() throws MbwayException {
 
-		MbwayAccount mbwayAccount = new MbwayAccount("CGDCK1", "123456789");
+		MbwayAccount mbwayAccount = new MbwayAccount("CGDCK1", "123456789", this.mbway);
 
 		assertTrue(mbwayAccount.getCode() != 0);
 		assertTrue(this.mbway.checkExistingIban("CGDCK1"));
@@ -45,7 +45,7 @@ public class AssociateMbwayMethodTest {
 	@Test
 	public void associateMbwayNotValidIban() {
 		try {
-			new MbwayAccount("CGDCK2", "123456789");
+			new MbwayAccount("CGDCK2", "123456789", this.mbway);
 			fail();
 		} catch (MbwayException e) {
 			assertTrue(!this.mbway.checkExistingIban("CGDCK2"));

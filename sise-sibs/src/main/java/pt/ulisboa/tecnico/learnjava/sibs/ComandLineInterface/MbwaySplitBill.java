@@ -1,6 +1,6 @@
 package pt.ulisboa.tecnico.learnjava.sibs.ComandLineInterface;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.learnjava.bank.exceptions.AccountException;
 import pt.ulisboa.tecnico.learnjava.bank.exceptions.ServicesException;
@@ -10,40 +10,44 @@ import pt.ulisboa.tecnico.learnjava.sibs.exceptions.SibsException;
 
 public class MbwaySplitBill {
 
-	private Mbway mbway;
-	private HashMap<String, Integer> friendsInfo;
+	public MbwaySplitBill(Integer numberOfFriends, Integer totalAmount, Mbway mbway, ArrayList<Friend> listOfFriends)
+			throws NumberFormatException, SibsException, AccountException, OperationException, ServicesException,
+			MbwayException {
 
-	public MbwaySplitBill(Integer numberOfFriends, Integer totalAmount) throws NumberFormatException, SibsException,
-			AccountException, OperationException, ServicesException, MbwayException {
+		if (listOfFriends.size() >= numberOfFriends) {
+			System.out.println("Oh no! Too many friends.");
 
-		this.mbway = Mbway.getInstance();
-		this.friendsInfo = ReadFriendsInput.getFriendsInfo();
-
-		if (!this.checkPaymentMoney(totalAmount)) {
-			System.out.println("Something is wrong. Did you set the bill amount right?");
-		} else {
-			String targetPhoneNumber = ReadFriendsInput.getTargetPhoneNumber();
-
-			for (String phoneNumber : this.friendsInfo.keySet()) {
-
-				this.mbway.mbwayTransfer(phoneNumber, targetPhoneNumber, this.friendsInfo.get(phoneNumber));
-				System.out.println(this.getFirstName(phoneNumber) + " payed successfully!");
-			}
-
+		} else if (listOfFriends.size() < numberOfFriends) {
+			System.out.println("Oh no! One friend is missing.");
 		}
 
-		ReadFriendsInput.getFriendsInfo().clear();
-		ReadFriendsInput.resetTargetInfo();
+		else if (!this.checkPaymentMoney(totalAmount, listOfFriends)) {
+			System.out.println("Something is wrong. Did you set the bill amount right?");
+		}
+
+		else {
+			String targetPhoneNumber = listOfFriends.get(0).getPhoneNumber();
+
+			for (int i = 1; i < listOfFriends.size(); i++) {
+				Friend sourceFriend = listOfFriends.get(i);
+
+				new MbwayTransfer(sourceFriend.getPhoneNumber(), targetPhoneNumber, sourceFriend.getAmount(), mbway);
+				System.out.println(this.getFirstName(sourceFriend.getPhoneNumber(), mbway) + " payed successfully!");
+			}
+		}
+
+		listOfFriends.clear();
 	}
 
 	// Este método (getPaymentMoney) está a melhorar o código de acordo com a
 	// guideline Write Short Units of Code.
 
-	private boolean checkPaymentMoney(Integer totalAmount) {
+	private boolean checkPaymentMoney(Integer totalAmount, ArrayList<Friend> listOfFriends) {
 		int totalPaymentMoney = 0;
 
-		for (Integer amount : this.friendsInfo.values()) {
-			totalPaymentMoney += amount;
+		for (Friend friend : listOfFriends) {
+
+			totalPaymentMoney += friend.getAmount();
 		}
 
 		if (totalPaymentMoney != totalAmount) {
@@ -54,9 +58,9 @@ public class MbwaySplitBill {
 
 	}
 
-	private String getFirstName(String phoneNumber) throws ServicesException, MbwayException {
-		String friendName = this.mbway.getSibs().getServices()
-				.getAccountByIban(this.mbway.getIbanByPhoneNumber(phoneNumber)).getClient().getFirstName();
+	private String getFirstName(String phoneNumber, Mbway mbway) throws ServicesException, MbwayException {
+		String friendName = mbway.getSibs().getServices().getAccountByIban(mbway.getIbanByPhoneNumber(phoneNumber))
+				.getClient().getFirstName();
 		return friendName;
 	}
 }

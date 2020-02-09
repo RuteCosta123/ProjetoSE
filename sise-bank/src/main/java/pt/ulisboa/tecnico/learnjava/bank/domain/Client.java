@@ -19,7 +19,6 @@ public class Client {
 	private String phoneNumber;
 	private final String address;
 	private int age;
-	private long codigoMbway;
 
 	public Client(Bank bank, String firstName, String lastName, String nif, String phoneNumber, String address, int age)
 			throws ClientException {
@@ -36,12 +35,22 @@ public class Client {
 		bank.addClient(this);
 	}
 
+	public Client(Bank bank, String phoneNumber, CartaoCidadao cc) throws ClientException {
+		this.checkParameters(bank, cc.getNif(), phoneNumber, cc.getAge());
+
+		this.bank = bank;
+		this.phoneNumber = phoneNumber;
+		this.firstName = cc.getFirstName();
+		this.lastName = cc.getLastName();
+		this.age = cc.getAge();
+		this.address = cc.getAddress();
+		this.nif = cc.getNif();
+
+		bank.addClient(this);
+	}
+
 	private void checkParameters(Bank bank, String nif, String phoneNumber, int age) throws ClientException {
 		if (age < 0) {
-			throw new ClientException();
-		}
-
-		if (nif.length() != 9 || !nif.matches("[0-9]+")) {
 			throw new ClientException();
 		}
 
@@ -50,9 +59,19 @@ public class Client {
 				throw new ClientException();
 			}
 
+			this.checkValidNif(bank, nif);
 		}
 
+	}
+
+	// Este método foi criado para melhorar o código de acordo com a guideline Write
+	// Simple Units of Code.
+	private void checkValidNif(Bank bank, String nif) throws ClientException {
 		if (bank.getClientByNif(nif) != null) {
+			throw new ClientException();
+		}
+
+		if (nif.length() != 9 || !nif.matches("[0-9]+")) {
 			throw new ClientException();
 		}
 	}
